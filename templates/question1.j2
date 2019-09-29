@@ -1,0 +1,38 @@
+{
+    "headings": [{
+        "heading": "Which Day Works best for the next get together?."
+    }
+    ],
+    "family": "single_choice",
+    "subtype": "vertical_two_col",
+    "answers": {
+        "choices": [
+        {% for i in day_list %}
+            {
+                "quiz_options": {
+                    "score": 0
+                },
+                "visible": true,
+                "text": "Friday -  October {{ i }}, {{ year }} 7-9pm (National Sausage Pizza Day and Day B4 my birthday)",
+                "position": {{ loop.index + 1 }}
+            },
+        {% endfor %}
+            {
+                "quiz_options": {
+                    "score": 0
+                },
+                "visible": true,
+                "text": "All work for me",
+                "position": 4
+            },
+            {
+                "quiz_options": {
+                    "score": 0
+                },
+                "visible": true,
+                "text": "None work for me",
+                "position": 5
+            }
+        ]
+    }
+}
