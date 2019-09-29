@@ -3,4 +3,5 @@ from surveymonkey import surveymonkey
 
 config = settings.Settings()
 
-print(dir(config))
+
+print("EOF")
