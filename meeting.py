@@ -4,4 +4,12 @@ from surveymonkey import surveymonkey
 config = settings.Settings()
 
 
-print("EOF")
+
+
+
+def main():
+    user_data = prompt_user_for_info()
+    print(user_data)
+
+
+main()
