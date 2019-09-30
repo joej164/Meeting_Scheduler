@@ -5,8 +5,8 @@ config = settings.Settings()
 
 
 def main():
-    print(dir(config))
-    print(config)
+    print(config.meetup_weekday)
+    print(config.survey_weekday)
 
 
 main()
