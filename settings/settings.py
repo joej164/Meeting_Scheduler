@@ -1,7 +1,6 @@
 # Settings file for the library
 import yaml
 from datetime import datetime
-from datetime import date
 
 
 class Settings():
@@ -15,14 +14,18 @@ class Settings():
         self.meetup_day = None
         self.meetup_weekday = None
         self.meetup_year = None
+        self.survey_api_url = "https://api.surveymonkey.com/v3/"
         self.survey_month = None
         self.survey_days = None
         self.survey_year = None
         self.survey_weekday = None
+        self.survey_title = None
+        self.survey_page_title = None
 
         self.load_settings()
         self.prompt_for_missing_info()
         self.calculate_and_validate_weekdays()
+        self.set_survey_names()
 
     # Load data from the settings.yml file
     def load_settings(self):
@@ -30,6 +33,12 @@ class Settings():
             data = yaml.safe_load(settings_file)
             for k, v in data.items():
                 setattr(self, k, v)
+
+    def set_survey_names(self):
+        if not self.survey_title:
+            self.survey_title = f"{self.survey_month} {self.survey_year} - PDT Alumni Meetup"
+        if not self.survey_page_title:
+            self.survey_page_title = f"{self.survey_month} {self.survey_year} - PDT Alumni Meetup"
 
     def calculate_and_validate_weekdays(self):
         meetup_weekday = self.calculate_weekday(self.meetup_year, self.meetup_month, self.meetup_day)
