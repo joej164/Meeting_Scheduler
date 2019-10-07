@@ -44,7 +44,7 @@ class Settings():
 
     def set_survey_names(self):
         if not self.survey_title:
-            self.survey_title = f"{self.survey_month} {self.survey_year} - PDT Alumni Meetup Test"
+            self.survey_title = f"{self.survey_month} {self.survey_year} - PDT Alumni Meetup"
         if not self.survey_page_title:
             self.survey_page_title = f"{self.survey_month} {self.survey_year} - PDT Alumni Meetup Test"
 
