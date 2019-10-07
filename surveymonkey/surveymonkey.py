@@ -1,5 +1,7 @@
 # Functions and files to work with Survey Monkey
 import requests
+import jinja2
+import json
 
 
 class SurveyMonkeyError(Exception):
@@ -22,8 +24,6 @@ class Surveymonkey():
             'Authorization': f"Bearer {self.config.token}"
         }
         method = "surveys"
-        print(self.config)
-        print(type(self.config))
         url = self.config.survey_api_url + method
 
         response = requests.request("POST", url, json=payload, headers=headers)
@@ -81,6 +81,77 @@ class Surveymonkey():
         }
 
         response = requests.request("PATCH", self.config.pages_href, json=payload, headers=headers)
+
+        if not response.ok or response.status_code in [400, 404]:
+            print(self.config.pages_href)
+            print(response.text)
+            raise SurveyMonkeyError("The Survey Monkey API did not respond properly")
+
+        try:
+            r = response.json()
+            return r
+
+        except Exception as e:
+            print(f"An exception has occured: {e}")
+            return None
+
+    def add_survey_questions(self):
+        url = self.config.pages_href + "/questions"
+        print(f"add question url is: {url}")
+        headers = {
+            'Content-Type': "application/json",
+            'Authorization': f"Bearer {self.config.token}"
+        }
+
+        template_loader = jinja2.FileSystemLoader(searchpath="./templates")
+        template_env = jinja2.Environment(loader=template_loader)
+
+        responses = []
+        # Load the template from file system
+        for template_file in self.config.question_filenames:
+            template = template_env.get_template(template_file)
+            rendered_template = template.render(
+                day_list=self.config.survey_days,
+                weekday=self.config.survey_weekday,
+                year=self.config.survey_year,
+                month=self.config.survey_month,
+                time=self.config.survey_time)
+
+            payload = json.loads(rendered_template)
+            print('$$$$$$$$ in template_file $$$$$$$$$')
+            print(payload)
+
+            response = requests.request("POST", url, json=payload, headers=headers)
+
+            if not response.ok or response.status_code in [400, 404]:
+                print(self.config.pages_href)
+                print(response.text)
+                raise SurveyMonkeyError("The Survey Monkey API did not respond properly")
+
+            try:
+                r = response.json()
+                responses.append(r)
+
+            except Exception as e:
+                print(f"An exception has occured: {e}")
+                return None
+
+        return responses
+
+    def create_collector(self):
+        url = self.config.survey_href + "/collectors"
+
+        headers = {
+            'Content-Type': "application/json",
+            'Authorization': f"Bearer {self.config.token}"
+        }
+
+        payload = {
+            "type": "weblink",
+            "name": f"{self.config.survey_title} Collector"
+            }
+
+        response = requests.request("POST", url, json=payload, headers=headers)
 
         if not response.ok or response.status_code in [400, 404]:
             print(self.config.pages_href)

@@ -108,3 +108,4 @@ pyvenv.cfg
 # My files
 settings.yml
 *.swp
+.vscode/

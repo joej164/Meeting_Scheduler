@@ -3,6 +3,10 @@ import yaml
 from datetime import datetime
 
 
+class SurveySettingsError(Exception):
+    pass
+
+
 class Settings():
     def __init__(self):
         self.token = None
@@ -14,18 +18,22 @@ class Settings():
         self.meetup_day = None
         self.meetup_weekday = None
         self.meetup_year = None
+        self.meetup_time = None
         self.survey_api_url = "https://api.surveymonkey.com/v3/"
         self.survey_month = None
         self.survey_days = None
         self.survey_year = None
         self.survey_weekday = None
         self.survey_title = None
+        self.survey_time = None
         self.survey_page_title = None
+        self.question_filenames = ["question1.j2", "question2.j2", "question3.j2"]
 
         self.load_settings()
         self.prompt_for_missing_info()
         self.calculate_and_validate_weekdays()
         self.set_survey_names()
+        self.calculate_meeting_time()
 
     # Load data from the settings.yml file
     def load_settings(self):
@@ -36,9 +44,9 @@ class Settings():
 
     def set_survey_names(self):
         if not self.survey_title:
-            self.survey_title = f"{self.survey_month} {self.survey_year} - PDT Alumni Meetup"
+            self.survey_title = f"{self.survey_month} {self.survey_year} - PDT Alumni Meetup Test"
         if not self.survey_page_title:
-            self.survey_page_title = f"{self.survey_month} {self.survey_year} - PDT Alumni Meetup"
+            self.survey_page_title = f"{self.survey_month} {self.survey_year} - PDT Alumni Meetup Test"
 
     def calculate_and_validate_weekdays(self):
         meetup_weekday = self.calculate_weekday(self.meetup_year, self.meetup_month, self.meetup_day)
@@ -64,8 +72,21 @@ class Settings():
         weekday = datetime.strftime(day, "%A")
         return weekday
 
-    # Prompt the user for any data missing after the settings load
+    def calculate_meeting_time(self):
+        # Based on the day of week, return the time of the get together
+        day_to_time = {
+            "Friday": "7-9pm",
+            "Saturday": "6-8pm",
+            "Sunday": "1-3pm"
+        }
+
+        if self.survey_weekday not in day_to_time.keys():
+            raise SurveySettingsError(f"The value '{self.survey_weekday}' was not in the conversion dictionary")
+        else:
+            self.survey_time = day_to_time[self.survey_weekday]
+
     def prompt_for_missing_info(self):
+        # Prompt the user for any data missing after the settings load
         while self.meetup_month not in self.valid_months:
             month = input("Enter the Month for the next Meetup: ")
             if month not in self.valid_months:

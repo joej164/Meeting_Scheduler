@@ -16,6 +16,13 @@ def main():
 
     print(config.survey_href)
     print(config.pages_href)
+    u = survey.add_survey_questions()
+    print(u)
+
+    v = survey.create_collector()
+    print(v)
+    print()
+    print(f'The survey url is: {v["url"]}')
 
 
 main()
